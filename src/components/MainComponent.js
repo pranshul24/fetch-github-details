@@ -95,54 +95,52 @@ class Main extends Component {
                     size: response['data'][i]['size'],
                 });
             }
-        }).catch(err => {
-            if (err) {
-                console.log(err);
-            }
-        });
+            let stars_url = "https://api.github.com/users/";
+            stars_url += value;
+            stars_url += "/starred"
 
-        let stars_url = "https://api.github.com/users/";
-        stars_url += value;
-        stars_url += "/starred"
+            axios({
+                method: "GET",
+                url: stars_url,
+            }).then((response) => {
+                const sz = this.state.user_public_repos_and_stars.length;
+                console.log(response['data']);
 
-        axios({
-            method: "GET",
-            url: stars_url,
-        }).then((response) => {
-            const sz = this.state.user_public_repos_and_stars.length;
-            console.log(response['data']);
-
-            for (let i = 0; i < response['data'].length; i++) {
-                let isFork = "Yes";
-                if (response['data'][i]['fork'] === false) {
-                    isFork = "No";
+                for (let i = 0; i < response['data'].length; i++) {
+                    let isFork = "Yes";
+                    if (response['data'][i]['fork'] === false) {
+                        isFork = "No";
+                    }
+                    let hasPage = "Yes";
+                    if (response['data'][i]['has_pages'] === false) {
+                        hasPage = "No";
+                    }
+                    this.stars.push({
+                        key: i + 1 + sz,
+                        name: response['data'][i]['name'],
+                        type: "Star",
+                        created: response['data'][i]['created_at'],
+                        updated: response['data'][i]['updated_at'],
+                        fork: isFork,
+                        page: hasPage,
+                        size: response['data'][i]['size'],
+                    });
                 }
-                let hasPage = "Yes";
-                if (response['data'][i]['has_pages'] === false) {
-                    hasPage = "No";
-                }
-                this.stars.push({
-                    key: i + 1 + sz,
-                    name: response['data'][i]['name'],
-                    type: "Star",
-                    created: response['data'][i]['created_at'],
-                    updated: response['data'][i]['updated_at'],
-                    fork: isFork,
-                    page: hasPage,
-                    size: response['data'][i]['size'],
+                this.repos_and_stars = this.repos.concat(this.stars);
+                this.setState({
+                    user_public_repos_and_stars: this.repos_and_stars
                 });
-            }
-            this.repos_and_stars = this.repos.concat(this.stars);
-            this.setState({
-                user_public_repos_and_stars: this.repos_and_stars
+            }).catch(err => {
+                if (err) {
+                    console.log(err);
+                }
             });
+
         }).catch(err => {
             if (err) {
                 console.log(err);
             }
         });
-
-
     }
 
     render() {
