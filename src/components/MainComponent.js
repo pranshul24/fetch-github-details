@@ -4,6 +4,7 @@ import "antd/dist/antd.css";
 import { Input } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { Table } from 'antd';
+import { Space, Button } from 'antd';
 
 class Main extends Component {
     constructor(props) {
@@ -93,9 +94,6 @@ class Main extends Component {
                     page: hasPage,
                     size: response['data'][i]['size'],
                 });
-                this.setState({
-                    user_public_repos_and_stars: this.repos
-                });
             }
         }).catch(err => {
             if (err) {
@@ -133,11 +131,11 @@ class Main extends Component {
                     page: hasPage,
                     size: response['data'][i]['size'],
                 });
-                this.ttt = this.repos.concat(this.stars)
-                this.setState({
-                    user_public_repos_and_stars: this.ttt
-                });
             }
+            this.repos_and_stars = this.repos.concat(this.stars);
+            this.setState({
+                user_public_repos_and_stars: this.repos_and_stars
+            });
         }).catch(err => {
             if (err) {
                 console.log(err);
@@ -149,15 +147,18 @@ class Main extends Component {
 
     render() {
         return (
+            <Space align="center">
+                <div style={{
+                    display: 'block', width: 700, padding: 30
+                }}>
+                    <Input placeholder="Enter username" prefix={<UserOutlined />}
+                        onChange={this.syncInput}
+                    />
+                    <br></br>
+                    <Table dataSource={this.state.user_public_repos_and_stars} columns={this.state.columns} />
+                </div>
+            </Space>
 
-            <div style={{
-                display: 'block', width: 700, padding: 30
-            }}>
-                <Input placeholder="Enter username" prefix={<UserOutlined />}
-                    onChange={this.syncInput}
-                />
-                <Table dataSource={this.state.user_public_repos_and_stars} columns={this.state.columns} />
-            </div>
         );
     }
 }
